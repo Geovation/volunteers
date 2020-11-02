@@ -1,16 +1,35 @@
 # volunteers
 
-A new Flutter project.
+A new Flutter project to show volunteer events on a map.
 
-## Getting Started
+## Enviroment Variables
 
-This project is a starting point for a Flutter application.
+* `OS_MAPS_API_KEY` - a valid OS DataHub MAPS API key
+* `OS_MAP_STYLE` - an OS map style, e.g. `Road`, `Outdoor` or `Light`
 
-A few resources to get you started if this is your first Flutter project:
+## Install Flutter
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+To install and run Flutter development environment, follow the official [online documentation](https://flutter.dev/docs/get-started/install) to get started.
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Run the app
+
+Install package dependencies:
+```
+flutter pub get
+```
+
+Check running devices:
+```
+flutter devices
+```
+
+Run on a single device (you can find `deviceId` at the result of the second column from the above command):
+```
+flutter run -d <deviceId>
+```
+
+Run on multiple devices (press `r` in terminal to perform Hot reload):
+```
+flutter run --dart-define=OS_MAPS_API_KEY=INSERT_API_KEY_HERE --dart-define=OS_MAP_STYLE=Road -d all
+```
+If you are debugging in VS Code, follow this [flutter wiki page](https://github.com/flutter/flutter/wiki/Multi-device-debugging-in-VS-Code) to create a `launch.json` with [--dart-define](https://dartcode.org/docs/using-dart-define-in-flutter/) for configurations.
