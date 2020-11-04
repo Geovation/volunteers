@@ -16,15 +16,15 @@ void main() {
 class Map extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new FlutterMap(
-      options: new MapOptions(
-        center: new LatLng(51.5, -0.09),
+    return FlutterMap(
+      options: MapOptions(
+        center: LatLng(51.5, -0.09),
         zoom: 12.0,
         maxZoom: 18.0,
         minZoom: 8.0,
       ),
       layers: [
-        new TileLayerOptions(
+        TileLayerOptions(
             urlTemplate:
                 'https://api.os.uk/maps/raster/v1/zxy/{layerId}_3857/{z}/{x}/{y}.png?key={accessKey}',
             additionalOptions: {

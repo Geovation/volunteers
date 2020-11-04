@@ -1,6 +1,10 @@
 # volunteers
 
-A new Flutter project to show volunteer events on a map.
+A new Flutter project to show volunteer events on a map as proof of concept.
+
+[`flutter_map`](https://github.com/fleaflet/flutter_map) widget is used in the app to display a Leaflet map provided by raster sources. Potentially swtich to [`flutter-mapbox-gl`](https://github.com/tobrun/flutter-mapbox-gl) widget for vector sources but not until the clustering support is available.
+
+[OS Maps API](https://osdatahub.os.uk/docs/wmts/overview) is applied to request map data. Open data is available from zoom level 0 to 16. For zoom level above 17, please upgrade to Premium plan, or the imagery will become blurry.
 
 ## Enviroment Variables
 
@@ -37,7 +41,51 @@ Run on multiple devices (press `r` in terminal to perform Hot reload):
 ```
 $ flutter run -d all --dart-define=OS_MAPS_API_KEY=<INSERT_YOUR_API_KEY_HERE> --dart-define=OS_MAP_STYLE=<INSERT_OS_MAP_STYLE_HERE>
 ```
-If you are debugging in VS Code, follow this [flutter wiki page](https://github.com/flutter/flutter/wiki/Multi-device-debugging-in-VS-Code) to create a `launch.json` with [--dart-define](https://dartcode.org/docs/using-dart-define-in-flutter/) for configurations.
+If you are debugging in VS Code, follow this [flutter wiki page](https://github.com/flutter/flutter/wiki/Multi-device-debugging-in-VS-Code) to create a `launch.json`, and then add [--dart-define](https://dartcode.org/docs/using-dart-define-in-flutter/) values in the `args` field for configurations.
+
+The `launch.json` should look something like this:
+```
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Current Device",
+			"request": "launch",
+			"type": "dart"
+		},
+		{
+			"name": "Android",
+			"request": "launch",
+			"type": "dart",
+			"deviceId": "<INSERT_YOUR_DEVICE_ID>",
+			"args": [
+				"--dart-define",
+				"OS_MAPS_API_KEY=<INSERT_YOUR_API_KEY_HERE>",
+				"--dart-define",
+				"OS_MAP_STYLE=<INSERT_OS_MAP_STYLE_HERE>"
+			]
+		},
+		{
+			"name": "iPhone",
+			"request": "launch",
+			"type": "dart",
+			"deviceId": "<INSERT_YOUR_DEVICE_ID>",
+			"args": [
+				"--dart-define",
+				"OS_MAPS_API_KEY=<INSERT_YOUR_API_KEY_HERE>",
+				"--dart-define",
+				"OS_MAP_STYLE=<INSERT_OS_MAP_STYLE_HERE>"
+			]
+		},
+	],
+	"compounds": [
+		{
+			"name": "All Devices",
+			"configurations": ["Android", "iPhone"],
+		}
+	]
+}
+```
 
 ## Run the web app
 
@@ -68,12 +116,14 @@ If you are debugging in VS Code, add the following snippet to the `launch.json` 
 		"--dart-define",
 		"OS_MAPS_API_KEY=<INSERT_YOUR_API_KEY_HERE>",
 		"--dart-define",
-		"OS_MAP_STYLE=<INSERT_OS_MAP_STYLE_HERE>"
+		"OS_MAP_STYLE=<INSERT_OS_MAP_STYLE_HERE>",
+		"--release" // Fix: failed to establish connection
 	]
 },
 ```
+Once saved, the configuration `Chrome` will show up in the drop-down at the top of the Debug side bar.
 
-You can also test the web app on your mobile browser in the same Local Area Network (LAN). It might take a while to load in debug mode:
+You can also test the web app on your mobile browser in the same Local Area Network (LAN):
 ```
 $ http://your-local-IP-address:12345
 ```
