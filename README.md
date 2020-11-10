@@ -59,6 +59,7 @@ The `launch.json` should look something like this:
 			"type": "dart",
 			"deviceId": "<INSERT_YOUR_DEVICE_ID>",
 			"args": [
+				"-v",
 				"--dart-define",
 				"OS_MAPS_API_KEY=<INSERT_YOUR_API_KEY_HERE>",
 				"--dart-define",
@@ -71,6 +72,7 @@ The `launch.json` should look something like this:
 			"type": "dart",
 			"deviceId": "<INSERT_YOUR_DEVICE_ID>",
 			"args": [
+				"-v",
 				"--dart-define",
 				"OS_MAPS_API_KEY=<INSERT_YOUR_API_KEY_HERE>",
 				"--dart-define",
@@ -109,6 +111,7 @@ If you are debugging in VS Code, add the following snippet to the `launch.json` 
 	"type": "dart",
 	"deviceId": "chrome",
 	"args": [
+		"-v",
 		"--web-hostname",
 		"0.0.0.0",
 		"--web-port",
@@ -126,4 +129,16 @@ Once saved, the configuration `Chrome` will show up in the drop-down at the top 
 You can also test the web app on your mobile browser in the same Local Area Network (LAN):
 ```
 $ http://your-local-IP-address:12345
+```
+
+## Run the tests
+
+Execute the following command:
+```
+$ flutter test
+```
+
+You can use `--coverage` flag to generate the coverage report for Coveralls or Codecov. If you want to view the report locally, install lcov `$ brew install lcov` and use `genhtml` command:
+```
+$ genhtml coverage/lcov.info -o coverage/html
 ```
