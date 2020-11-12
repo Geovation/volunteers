@@ -1,5 +1,7 @@
 # volunteers
+[![CI](https://github.com/Geovation/volunteers/workflows/CI/badge.svg)](https://github.com/Geovation/volunteers/actions)
 [![codecov](https://codecov.io/gh/Geovation/volunteers/branch/master/graph/badge.svg?token=CDEMMVA3TY)](https://codecov.io/gh/Geovation/volunteers)
+
 A new Flutter project to show volunteer events on a map as proof of concept.
 
 [`flutter_map`](https://github.com/fleaflet/flutter_map) widget is used in the app to display a Leaflet map provided by raster sources. Potentially swtich to [`flutter-mapbox-gl`](https://github.com/tobrun/flutter-mapbox-gl) widget for vector sources but not until the clustering support is available.
