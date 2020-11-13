@@ -4,13 +4,18 @@ import 'package:latlong/latlong.dart';
 import 'package:volunteers/config.dart';
 
 void main() {
-  runApp(
-    MaterialApp(
+  runApp(VolunteerApp());
+}
+
+class VolunteerApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Volunteers',
       home: Map(),
-    ),
-  );
+    );
+  }
 }
 
 class Map extends StatelessWidget {
