@@ -1,0 +1,42 @@
+name: Build and Deployment
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - "**.md"
+
+jobs:
+  build_web:
+    name: Build flutter web
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: subosito/flutter-action@v1
+      with:
+        channel: "dev"
+    - run: flutter pub get
+    - run: flutter config --enable-web
+    - run: flutter build web --dart-define=OS_MAPS_API_KEY=${{ secrets.OS_MAPS_API_KEY }} --dart-define=OS_MAP_STYLE=${{ secrets.OS_MAP_STYLE }}
+    - name: Archive production artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: web-build
+        path: build/web
+  deploy_web:
+    name: Deploy web to firebase hosting
+    needs: build_web
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Download artifact for deployment
+        uses: actions/download-artifact@v2
+        with:
+          name: web-build
+      - name: Deploy web-build to firebase
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only hosting --public web-build
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          PROJECT_ID: default
