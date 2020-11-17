@@ -1,5 +1,5 @@
 # volunteers
-[![CI](https://github.com/Geovation/volunteers/workflows/CI/badge.svg)](https://github.com/Geovation/volunteers/actions)
+[![CI](https://github.com/Geovation/volunteers/workflows/Flutter%20Test/badge.svg)](https://github.com/Geovation/volunteers/actions)
 [![codecov](https://codecov.io/gh/Geovation/volunteers/branch/master/graph/badge.svg?token=CDEMMVA3TY)](https://codecov.io/gh/Geovation/volunteers)
 
 A new Flutter project to show volunteer events on a map as proof of concept.

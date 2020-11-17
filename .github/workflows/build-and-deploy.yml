@@ -1,27 +1,14 @@
-name: CI
+name: Build and Deployment
 on:
-  pull_request:
+  push:
+    branches:
+      - master
     paths-ignore:
       - "**.md"
 
 jobs:
-  flutter_test:
-    name: Run flutter test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: subosito/flutter-action@v1
-        with:
-          channel: "stable"
-      - run: flutter pub get
-      - run: flutter analyze
-      - run: flutter test --coverage
-      - uses: codecov/codecov-action@v1
-        with:
-          file: ./coverage/lcov.info
   build_web:
     name: Build flutter web
-    needs: flutter_test
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -30,7 +17,7 @@ jobs:
         channel: "dev"
     - run: flutter pub get
     - run: flutter config --enable-web
-    - run: flutter build web
+    - run: flutter build web --dart-define=OS_MAPS_API_KEY=${{ secrets.OS_MAPS_API_KEY }} --dart-define=OS_MAP_STYLE=${{ secrets.OS_MAP_STYLE }}
     - name: Archive production artifact
       uses: actions/upload-artifact@v2
       with:
