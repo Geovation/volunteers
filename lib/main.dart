@@ -25,17 +25,19 @@ class Map extends StatelessWidget {
       options: MapOptions(
         center: LatLng(51.5, -0.09),
         zoom: 12.0,
-        maxZoom: 20.0,
-        minZoom: 8.0,
       ),
       layers: [
         TileLayerOptions(
-            urlTemplate:
-                'https://api.os.uk/maps/raster/v1/zxy/{layerId}_3857/{z}/{x}/{y}.png?key={accessKey}',
-            additionalOptions: {
-              'layerId': '${EnvironmentConfig.OS_MAP_STYLE}',
-              'accessKey': '${EnvironmentConfig.OS_MAPS_API_KEY}',
-            }),
+          urlTemplate:
+              'https://api.os.uk/maps/raster/v1/zxy/{layerId}_3857/{z}/{x}/{y}.png?key={accessKey}',
+          additionalOptions: {
+            'layerId': '${EnvironmentConfig.OS_MAP_STYLE}',
+            'accessKey': '${EnvironmentConfig.OS_MAPS_API_KEY}',
+          },
+          retinaMode: true,
+          minZoom: 8.0,
+          maxZoom: 20.0,
+        ),
       ],
     );
   }
