@@ -25,7 +25,7 @@ class Map extends StatelessWidget {
       options: MapOptions(
         center: LatLng(51.5, -0.09),
         zoom: 12.0,
-        maxZoom: 18.0,
+        maxZoom: 20.0,
         minZoom: 8.0,
       ),
       layers: [
