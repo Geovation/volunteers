@@ -6,7 +6,6 @@ class ZoomControlPluginOption extends LayerOptions {
   final int minZoom;
   final int maxZoom;
   final bool mini;
-  final double padding;
   final Alignment alignment;
   final Color zoomInColor;
   final Color zoomOutColor;
@@ -18,7 +17,6 @@ class ZoomControlPluginOption extends LayerOptions {
     this.minZoom = 1,
     this.maxZoom = 18,
     this.mini = true,
-    this.padding = 2.0,
     this.alignment = Alignment.topRight,
     this.zoomInColor,
     this.zoomInIcon = Icons.add,
@@ -57,16 +55,17 @@ class ZoomControl extends StatelessWidget {
   Widget build(BuildContext context) {
     return Align(
       alignment: zoomControlOpts.alignment,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.only(top: 25.0, right: 11.0),
-            child: FloatingActionButton(
+      child: SafeArea(
+        minimum: const EdgeInsets.only(top: 15.0, left: 12.0, right: 12.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            FloatingActionButton(
               heroTag: 'zoomInButton',
               mini: zoomControlOpts.mini,
               backgroundColor:
                   zoomControlOpts.zoomInColor ?? Theme.of(context).primaryColor,
+              elevation: 4.0,
               onPressed: () {
                 var bounds = map.getBounds();
                 var centerZoom = map.getBoundsCenterZoom(bounds, options);
@@ -79,28 +78,29 @@ class ZoomControl extends StatelessWidget {
               },
               child: Icon(zoomControlOpts.zoomInIcon, color: Colors.black),
             ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(top: 8.0, right: 11.0),
-            child: FloatingActionButton(
-              heroTag: 'zoomOutButton',
-              mini: zoomControlOpts.mini,
-              backgroundColor: zoomControlOpts.zoomOutColor ??
-                  Theme.of(context).primaryColor,
-              onPressed: () {
-                var bounds = map.getBounds();
-                var centerZoom = map.getBoundsCenterZoom(bounds, options);
-                var zoom = centerZoom.zoom - 1;
-                if (zoom < zoomControlOpts.minZoom) {
-                  zoom = zoomControlOpts.minZoom as double;
-                } else {
-                  map.move(centerZoom.center, zoom);
-                }
-              },
-              child: Icon(zoomControlOpts.zoomOutIcon, color: Colors.black),
+            Padding(
+              padding: EdgeInsets.only(top: 6.0),
+              child: FloatingActionButton(
+                heroTag: 'zoomOutButton',
+                mini: zoomControlOpts.mini,
+                backgroundColor: zoomControlOpts.zoomOutColor ??
+                    Theme.of(context).primaryColor,
+                elevation: 4.0,
+                onPressed: () {
+                  var bounds = map.getBounds();
+                  var centerZoom = map.getBoundsCenterZoom(bounds, options);
+                  var zoom = centerZoom.zoom - 1;
+                  if (zoom < zoomControlOpts.minZoom) {
+                    zoom = zoomControlOpts.minZoom as double;
+                  } else {
+                    map.move(centerZoom.center, zoom);
+                  }
+                },
+                child: Icon(zoomControlOpts.zoomOutIcon, color: Colors.black),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
