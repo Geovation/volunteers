@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
 import 'package:volunteers/config.dart';
+import 'zoom_control_plugin_option.dart';
 
 void main() {
   runApp(VolunteerApp());
@@ -25,6 +26,11 @@ class Map extends StatelessWidget {
       options: MapOptions(
         center: LatLng(51.5, -0.09),
         zoom: 12.0,
+        minZoom: 8.0,
+        maxZoom: 20.0,
+        plugins: [
+          ZoomControlPlugin(),
+        ],
       ),
       layers: [
         TileLayerOptions(
@@ -34,10 +40,15 @@ class Map extends StatelessWidget {
             'layerId': '${EnvironmentConfig.OS_MAP_STYLE}',
             'accessKey': '${EnvironmentConfig.OS_MAPS_API_KEY}',
           },
-          retinaMode: true,
-          minZoom: 8.0,
           maxZoom: 20.0,
         ),
+        ZoomControlPluginOption(
+            minZoom: 8,
+            maxZoom: 20,
+            mini: true,
+            zoomInColor: Colors.grey[100],
+            zoomOutColor: Colors.grey[100],
+            alignment: Alignment.topRight),
       ],
     );
   }
