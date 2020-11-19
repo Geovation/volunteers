@@ -51,7 +51,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: ios-build
-        path: build/ios
+        path: build/ios/Runner.ipa
   build_apk:
     name: Build flutter Android
     runs-on: ubuntu-latest
