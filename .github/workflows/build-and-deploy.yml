@@ -112,7 +112,7 @@ jobs:
         token: ${{secrets.FIREBASE_TOKEN}}
         groups: testers
         debug: true
-        file: Runner.ipa
+        file: ios-build/Runner.ipa
   deploy_android_beta:
     name: Deploy Android APK to firebase app distribution
     needs: [build_apk]
@@ -131,4 +131,4 @@ jobs:
         token: ${{secrets.FIREBASE_TOKEN}}
         groups: testers
         debug: true
-        file: app-release.apk
+        file: apk-build/app-release.apk
