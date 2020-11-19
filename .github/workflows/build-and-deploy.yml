@@ -40,14 +40,19 @@ jobs:
         --output $HOME/secrets/secrets.tar secrets.tar.gpg
         tar xvf $HOME/secrets/secrets.tar
         flutter build ios --release --no-codesign --dart-define=OS_MAPS_API_KEY=${{ secrets.OS_MAPS_API_KEY }} --dart-define=OS_MAP_STYLE=${{ secrets.OS_MAP_STYLE }}
+        mkdir -p Payload
+        mv build/ios/iphoneos/Runner.app Payload
+        zip -r -y Payload.zip Payload/Runner.app
+        mv Payload.zip build/ios/Runner.ipa
+        rm -rf Payload
       env:
         SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE }}
     - name: Upload ipa
       uses: actions/upload-artifact@v2
       with:
         name: ios-build
-        path: build/ios/iphoneos
-  build_app_bundle:
+        path: build/ios
+  build_apk:
     name: Build flutter Android
     runs-on: ubuntu-latest
     steps:
@@ -57,20 +62,20 @@ jobs:
           channel: "stable"
       - run: flutter pub get
       - run: flutter clean
-      - name: Build app bundle
+      - name: Build APK
         run: |
           mkdir $HOME/secrets
           gpg --quiet --batch --yes --decrypt --passphrase="$SECRET_PASSPHRASE" \
           --output $HOME/secrets/secrets.tar secrets.tar.gpg
           tar xvf $HOME/secrets/secrets.tar
-          flutter build appbundle --dart-define=OS_MAPS_API_KEY=${{ secrets.OS_MAPS_API_KEY }} --dart-define=OS_MAP_STYLE=${{ secrets.OS_MAP_STYLE }}
+          flutter build apk --dart-define=OS_MAPS_API_KEY=${{ secrets.OS_MAPS_API_KEY }} --dart-define=OS_MAP_STYLE=${{ secrets.OS_MAP_STYLE }}
         env:
           SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE }}
-      - name: Upload app bundle
+      - name: Upload APK
         uses: actions/upload-artifact@v2
         with:
-          name: app-bundle-build
-          path: build/app/outputs/bundle/release
+          name: apk-build
+          path: build/app/outputs/apk/release
   deploy_web:
     name: Deploy web to firebase hosting
     needs: build_web
@@ -106,22 +111,24 @@ jobs:
         appId: ${{secrets.FIREBASE_IOS_APP_ID}}
         token: ${{secrets.FIREBASE_TOKEN}}
         groups: testers
+        debug: true
         file: Runner.ipa
-  deploy_app_bundle_beta:
-    name: Upload app-bundle-build to firebase app distribution
-    needs: [build_app_bundle]
+  deploy_android_beta:
+    name: Deploy Android APK to firebase app distribution
+    needs: [build_apk]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
     - name: Download artifact for deployment
       uses: actions/download-artifact@v2
       with:
-        name: app-bundle-build
-        path: app-bundle-build
-    - name: Upload app bundle to firebase app distribution
+        name: apk-build
+        path: apk-build
+    - name: Upload APK to firebase app distribution
       uses: wzieba/Firebase-Distribution-Github-Action@v1
       with:
         appId: ${{secrets.FIREBASE_ANDROID_APP_ID}}
         token: ${{secrets.FIREBASE_TOKEN}}
         groups: testers
-        file: app-release.aab
+        debug: true
+        file: app-release.apk
