@@ -56,7 +56,7 @@ class ZoomControl extends StatelessWidget {
     return Align(
       alignment: zoomControlOpts.alignment,
       child: SafeArea(
-        minimum: const EdgeInsets.only(top: 15.0, left: 12.0, right: 12.0),
+        minimum: const EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[

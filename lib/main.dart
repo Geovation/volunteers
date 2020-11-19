@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
 import 'package:volunteers/config.dart';
-import 'zoom_control_plugin_option.dart';
+import 'zoom_control_plugin.dart';
+import 'attribution_plugin.dart';
 
 void main() {
   runApp(VolunteerApp());
@@ -30,6 +31,7 @@ class Map extends StatelessWidget {
         maxZoom: 20.0,
         plugins: [
           ZoomControlPlugin(),
+          AttributionPlugin(),
         ],
       ),
       layers: [
@@ -49,6 +51,14 @@ class Map extends StatelessWidget {
             zoomInColor: Colors.grey[100],
             zoomOutColor: Colors.grey[100],
             alignment: Alignment.topRight),
+        AttributionPluginOption(
+            logoIcon: IconAsset.OS_LOGO,
+            logoLabel: 'OS Logo',
+            width: 90.0,
+            height: 24.0,
+            copyrightTitle: 'OS Maps',
+            copyrightContent:
+                'Contains OS data © Crown copyright and database rights 2020'),
       ],
     );
   }
