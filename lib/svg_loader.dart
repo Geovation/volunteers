@@ -26,7 +26,7 @@ class SVGLoader extends StatelessWidget {
     // Use `Image.network` as a workaround for Web.
     // Use `SvgPicture` from flutter_svg for iOS and Andriod.
     if (kIsWeb) {
-      return Image.network(assetPath,
+      return Image.network('assets/$assetPath',
           width: width,
           height: height,
           fit: fit,
