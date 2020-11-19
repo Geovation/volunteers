@@ -48,3 +48,8 @@ app.*.map.json
 
 # VS code
 .vscode/
+
+# Firebase related
+GoogleService-Info.plist
+google-services.json
+secrets.tar
