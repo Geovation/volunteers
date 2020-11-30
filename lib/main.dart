@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
 import 'package:volunteers/config.dart';
-import 'zoom_control_plugin.dart';
+import 'map_control_plugin.dart';
 import 'attribution_plugin.dart';
 
 void main() {
@@ -30,7 +30,7 @@ class Map extends StatelessWidget {
         minZoom: 8.0,
         maxZoom: 20.0,
         plugins: [
-          ZoomControlPlugin(),
+          MapControlPlugin(),
           AttributionPlugin(),
         ],
       ),
@@ -44,13 +44,7 @@ class Map extends StatelessWidget {
           },
           maxZoom: 20.0,
         ),
-        ZoomControlPluginOption(
-            minZoom: 8,
-            maxZoom: 20,
-            mini: true,
-            zoomInColor: Colors.grey[100],
-            zoomOutColor: Colors.grey[100],
-            alignment: Alignment.topRight),
+        MapControlPluginOption(),
         AttributionPluginOption(
             logoIcon: IconAsset.OS_LOGO,
             logoLabel: 'OS Logo',

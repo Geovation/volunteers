@@ -33,25 +33,26 @@ jobs:
         channel: 'stable'
     - run: flutter pub get
     - run: flutter clean
-    - name: Build ipa
-      run: |
-        mkdir $HOME/secrets
-        gpg --quiet --batch --yes --decrypt --passphrase="$SECRET_PASSPHRASE" \
-        --output $HOME/secrets/secrets.tar secrets.tar.gpg
-        tar xvf $HOME/secrets/secrets.tar
-        flutter build ios --release --no-codesign --dart-define=OS_MAPS_API_KEY=${{ secrets.OS_MAPS_API_KEY }} --dart-define=OS_MAP_STYLE=${{ secrets.OS_MAP_STYLE }}
-        mkdir -p Payload
-        mv build/ios/iphoneos/Runner.app Payload
-        zip -r -y Payload.zip Payload/Runner.app
-        mv Payload.zip build/ios/Runner.ipa
-        rm -rf Payload
-      env:
-        SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE }}
-    - name: Upload ipa
-      uses: actions/upload-artifact@v2
-      with:
-        name: ios-build
-        path: build/ios/Runner.ipa
+    # TODO: Ensure to build a signed IPA with provisioning profile
+    # - name: Build ipa
+    #   run: |
+    #     mkdir $HOME/secrets
+    #     gpg --quiet --batch --yes --decrypt --passphrase="$SECRET_PASSPHRASE" \
+    #     --output $HOME/secrets/secrets.tar secrets.tar.gpg
+    #     tar xvf $HOME/secrets/secrets.tar
+    #     flutter build ios --no-codesign --dart-define=OS_MAPS_API_KEY=${{ secrets.OS_MAPS_API_KEY }} --dart-define=OS_MAP_STYLE=${{ secrets.OS_MAP_STYLE }}
+    #     mkdir -p Payload
+    #     mv build/ios/iphoneos/Runner.app Payload
+    #     zip -r -y Payload.zip Payload/Runner.app
+    #     mv Payload.zip build/ios/Runner.ipa
+    #     rm -rf Payload
+    #   env:
+    #     SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE }}
+    # - name: Upload ipa
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: ios-build
+    #     path: build/ios/Runner.ipa
   build_apk:
     name: Build flutter Android
     runs-on: ubuntu-latest
@@ -94,25 +95,25 @@ jobs:
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           PROJECT_ID: default
-  deploy_ios_beta:
-    name: Upload ios-build to firebase app distribution
-    needs: [build_ios]
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
-    - name: Download artifact for deployment
-      uses: actions/download-artifact@v2
-      with:
-        name: ios-build
-        path: ios-build
-    - name: Upload ipa to firebase app distribution
-      uses: wzieba/Firebase-Distribution-Github-Action@v1
-      with:
-        appId: ${{secrets.FIREBASE_IOS_APP_ID}}
-        token: ${{secrets.FIREBASE_TOKEN}}
-        groups: testers
-        debug: true
-        file: ios-build/Runner.ipa
+  # deploy_ios_beta:
+  #   name: Upload ios-build to firebase app distribution
+  #   needs: [build_ios]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v1
+  #   - name: Download artifact for deployment
+  #     uses: actions/download-artifact@v2
+  #     with:
+  #       name: ios-build
+  #       path: ios-build
+  #   - name: Upload ipa to firebase app distribution
+  #     uses: wzieba/Firebase-Distribution-Github-Action@v1
+  #     with:
+  #       appId: ${{secrets.FIREBASE_IOS_APP_ID}}
+  #       token: ${{secrets.FIREBASE_TOKEN}}
+  #       groups: testers
+  #       debug: true
+  #       file: ios-build/Runner.ipa
   deploy_android_beta:
     name: Deploy Android APK to firebase app distribution
     needs: [build_apk]
