@@ -7,7 +7,7 @@ A new Flutter project to show volunteer events on a map as proof of concept.
 
 [`flutter_map`](https://github.com/fleaflet/flutter_map) widget is used in the app to display a Leaflet map provided by raster sources. Potentially swtich to [`flutter-mapbox-gl`](https://github.com/tobrun/flutter-mapbox-gl) widget for vector sources but not until the clustering support is available.
 
-[OS Maps API](https://osdatahub.os.uk/docs/wmts/overview) is applied to request map data. Open data is available from zoom level 0 to 16. For zoom level above 17, please upgrade to Premium plan, or the imagery will become blurry.
+[OS Maps API](https://osdatahub.os.uk/docs/wmts/overview) is applied to request map data. Open data for `EPSG:3857` is available from zoom level 7 to 16. For zoom level above 17, please upgrade to Premium plan, or the imagery will become blurry.
 
 ## Enviroment Variables
 
@@ -128,6 +128,12 @@ $ http://your-local-IP-address:12345
 In order to access location, use `ngrok` to create a public HTTPS url as `getCurrentPosition()` and `watchPosition()` are deprecated on insecure origins.
 ```
 $ ngrok http 12345
+```
+
+Besides, test the web build locally before deploy to Firebase hosting:
+```
+$ flutter build web -v --dart-define=OS_MAPS_API_KEY=<INSERT_YOUR_API_KEY_HERE> --dart-define=OS_MAP_STYLE=<INSERT_OS_MAP_STYLE_HERE>
+$ firebase emulators:start
 ```
 
 ## Run the tests

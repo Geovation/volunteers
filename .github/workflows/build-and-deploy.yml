@@ -23,36 +23,36 @@ jobs:
       with:
         name: web-build
         path: build/web
-  build_ios:
-    name: Build flutter iOS
-    runs-on: macOS-latest
-    steps:
-    - uses: actions/checkout@v2
-    - uses: subosito/flutter-action@v1
-      with:
-        channel: 'stable'
-    - run: flutter pub get
-    - run: flutter clean
-    # TODO: Ensure to build a signed IPA with provisioning profile
-    # - name: Build ipa
-    #   run: |
-    #     mkdir $HOME/secrets
-    #     gpg --quiet --batch --yes --decrypt --passphrase="$SECRET_PASSPHRASE" \
-    #     --output $HOME/secrets/secrets.tar secrets.tar.gpg
-    #     tar xvf $HOME/secrets/secrets.tar
-    #     flutter build ios --no-codesign --dart-define=OS_MAPS_API_KEY=${{ secrets.OS_MAPS_API_KEY }} --dart-define=OS_MAP_STYLE=${{ secrets.OS_MAP_STYLE }}
-    #     mkdir -p Payload
-    #     mv build/ios/iphoneos/Runner.app Payload
-    #     zip -r -y Payload.zip Payload/Runner.app
-    #     mv Payload.zip build/ios/Runner.ipa
-    #     rm -rf Payload
-    #   env:
-    #     SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE }}
-    # - name: Upload ipa
-    #   uses: actions/upload-artifact@v2
-    #   with:
-    #     name: ios-build
-    #     path: build/ios/Runner.ipa
+  # build_ios:
+  #   name: Build flutter iOS
+  #   runs-on: macOS-latest
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - uses: subosito/flutter-action@v1
+  #     with:
+  #       channel: 'stable'
+  #   - run: flutter pub get
+  #   - run: flutter clean
+  #   # TODO: Ensure to build a signed IPA with provisioning profile
+  #   - name: Build ipa
+  #     run: |
+  #       mkdir $HOME/secrets
+  #       gpg --quiet --batch --yes --decrypt --passphrase="$SECRET_PASSPHRASE" \
+  #       --output $HOME/secrets/secrets.tar secrets.tar.gpg
+  #       tar xvf $HOME/secrets/secrets.tar
+  #       flutter build ios --no-codesign --dart-define=OS_MAPS_API_KEY=${{ secrets.OS_MAPS_API_KEY }} --dart-define=OS_MAP_STYLE=${{ secrets.OS_MAP_STYLE }}
+  #       mkdir -p Payload
+  #       mv build/ios/iphoneos/Runner.app Payload
+  #       zip -r -y Payload.zip Payload/Runner.app
+  #       mv Payload.zip build/ios/Runner.ipa
+  #       rm -rf Payload
+  #     env:
+  #       SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE }}
+  #   - name: Upload ipa
+  #     uses: actions/upload-artifact@v2
+  #     with:
+  #       name: ios-build
+  #       path: build/ios/Runner.ipa
   build_apk:
     name: Build flutter Android
     runs-on: ubuntu-latest
