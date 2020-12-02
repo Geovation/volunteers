@@ -54,6 +54,11 @@ class HomePage extends StatelessWidget {
             loginState: appState.loginState,
             signInWithEmailAndPassword: appState.signInWithEmailAndPassword,
             signOut: appState.signOut,
+            startResetFlow: appState.startResetFlow,
+            sendPasswordResetEmail: appState.sendPasswordResetEmail,
+            startRegisterAccountFlow: appState.startRegisterFlow,
+            registerAccount: appState.registerAccount,
+            cancel: appState.cancel,
           ),
         ),
       ),
@@ -99,5 +104,42 @@ class ApplicationState extends ChangeNotifier {
 
   void signOut() {
     FirebaseAuth.instance.signOut();
+  }
+
+  void startResetFlow() {
+    _loginState = ApplicationLoginState.resetPassword;
+    notifyListeners();
+  }
+
+  void sendPasswordResetEmail(
+    String email,
+    void Function(FirebaseAuthException e) errorCallback,
+  ) async {
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+    } on FirebaseAuthException catch (e) {
+      errorCallback(e);
+    }
+  }
+
+  void startRegisterFlow() {
+    _loginState = ApplicationLoginState.register;
+    notifyListeners();
+  }
+
+  void registerAccount(String email, String displayName, String password,
+      void Function(FirebaseAuthException e) errorCallback) async {
+    try {
+      var credential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+      await credential.user.updateProfile(displayName: displayName);
+    } on FirebaseAuthException catch (e) {
+      errorCallback(e);
+    }
+  }
+
+  void cancel() {
+    _loginState = ApplicationLoginState.loggedOut;
+    notifyListeners();
   }
 }
