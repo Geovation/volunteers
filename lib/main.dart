@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'authentication.dart';
@@ -54,6 +55,11 @@ class HomePage extends StatelessWidget {
             loginState: appState.loginState,
             signInWithEmailAndPassword: appState.signInWithEmailAndPassword,
             signOut: appState.signOut,
+            startResetFlow: appState.startResetFlow,
+            sendPasswordResetEmail: appState.sendPasswordResetEmail,
+            startRegisterAccountFlow: appState.startRegisterFlow,
+            registerAccount: appState.registerAccount,
+            cancel: appState.cancel,
           ),
         ),
       ),
@@ -99,5 +105,55 @@ class ApplicationState extends ChangeNotifier {
 
   void signOut() {
     FirebaseAuth.instance.signOut();
+  }
+
+  void startResetFlow() {
+    _loginState = ApplicationLoginState.resetPassword;
+    notifyListeners();
+  }
+
+  void sendPasswordResetEmail(
+    String email,
+    void Function(FirebaseAuthException e) errorCallback,
+  ) async {
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+    } on FirebaseAuthException catch (e) {
+      errorCallback(e);
+    }
+  }
+
+  void startRegisterFlow() {
+    _loginState = ApplicationLoginState.register;
+    notifyListeners();
+  }
+
+  void registerAccount(
+      String email,
+      String firstName,
+      String lastName,
+      String password,
+      void Function(FirebaseAuthException e) errorCallback) async {
+    try {
+      var credential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+      await credential.user
+          .updateProfile(displayName: firstName + ' ' + lastName);
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(credential.user.uid)
+          .set({
+        'email': email,
+        'firstName': firstName,
+        'lastName': lastName,
+      });
+    } on FirebaseAuthException catch (e) {
+      errorCallback(e);
+    }
+  }
+
+  void cancel() {
+    _loginState = ApplicationLoginState.loggedOut;
+    notifyListeners();
   }
 }
