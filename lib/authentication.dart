@@ -26,7 +26,8 @@ class Authentication extends StatelessWidget {
   final void Function() startRegisterAccountFlow;
   final void Function(
     String email,
-    String displayName,
+    String firstName,
+    String lastName,
     String password,
     void Function(Exception e) error,
   ) registerAccount;
@@ -74,12 +75,14 @@ class Authentication extends StatelessWidget {
           },
           registerAccount: (
             email,
-            displayName,
+            firstName,
+            lastName,
             password,
           ) {
             registerAccount(
                 email,
-                displayName,
+                firstName,
+                lastName,
                 password,
                 (e) =>
                     _showErrorDialog(context, 'Failed to create account', e));
@@ -161,10 +164,11 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
             key: _formKey,
             child: Column(
               children: <Widget>[
-                Image.asset('assets/heart.jpg'),
-                SizedBox(
-                  height: 10,
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(5.0),
+                  child: Image.asset('assets/heart.jpg'),
                 ),
+                SizedBox(height: 15),
                 Header('Welcome'),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 5.0),
@@ -214,14 +218,17 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
                 ),
                 FlatButton(
                   hoverColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  splashColor: Colors.transparent,
                   onPressed: () {
                     widget.resetPassword();
                   },
                   child: Text('Forgot password?'),
                 ),
-                SizedBox(height: 8),
                 FlatButton(
                   hoverColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  splashColor: Colors.transparent,
                   onPressed: () {
                     widget.registerAccount();
                   },
@@ -300,7 +307,7 @@ class _EmailResetFormState extends State<EmailResetForm> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.only(top: 15.0),
+                  padding: const EdgeInsets.only(top: 8.0),
                   width: double.infinity,
                   child: StyledButton(
                     onPressed: () {
@@ -323,7 +330,8 @@ class RegisterForm extends StatefulWidget {
     @required this.registerAccount,
     @required this.cancel,
   });
-  final void Function(String email, String displayName, String password)
+  final void Function(
+          String email, String firstName, String lastName, String password)
       registerAccount;
   final void Function() cancel;
   @override
@@ -333,7 +341,8 @@ class RegisterForm extends StatefulWidget {
 class _RegisterFormState extends State<RegisterForm> {
   final _formKey = GlobalKey<FormState>(debugLabel: '_RegisterFormState');
   final _emailController = TextEditingController();
-  final _displayNameController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
   final _passwordController = TextEditingController();
 
   @override
@@ -371,13 +380,28 @@ class _RegisterFormState extends State<RegisterForm> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 5.0),
                   child: TextFormField(
-                    controller: _displayNameController,
+                    controller: _firstNameController,
                     decoration: const InputDecoration(
-                      hintText: 'First & last name',
+                      hintText: 'First name',
                     ),
                     validator: (value) {
                       if (value.isEmpty) {
-                        return 'Enter your account name';
+                        return 'Enter your first name';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 5.0),
+                  child: TextFormField(
+                    controller: _lastNameController,
+                    decoration: const InputDecoration(
+                      hintText: 'Last name',
+                    ),
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Enter your last name';
                       }
                       return null;
                     },
@@ -407,7 +431,8 @@ class _RegisterFormState extends State<RegisterForm> {
                       if (_formKey.currentState.validate()) {
                         widget.registerAccount(
                           _emailController.text,
-                          _displayNameController.text,
+                          _firstNameController.text,
+                          _lastNameController.text,
                           _passwordController.text,
                         );
                       }
@@ -416,7 +441,7 @@ class _RegisterFormState extends State<RegisterForm> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.only(top: 15.0),
+                  padding: const EdgeInsets.only(top: 8.0),
                   width: double.infinity,
                   child: StyledButton(
                     onPressed: () {

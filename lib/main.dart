@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'authentication.dart';
@@ -127,12 +128,25 @@ class ApplicationState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void registerAccount(String email, String displayName, String password,
+  void registerAccount(
+      String email,
+      String firstName,
+      String lastName,
+      String password,
       void Function(FirebaseAuthException e) errorCallback) async {
     try {
       var credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
-      await credential.user.updateProfile(displayName: displayName);
+      await credential.user
+          .updateProfile(displayName: firstName + ' ' + lastName);
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(credential.user.uid)
+          .set({
+        'email': email,
+        'firstName': firstName,
+        'lastName': lastName,
+      });
     } on FirebaseAuthException catch (e) {
       errorCallback(e);
     }
