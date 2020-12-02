@@ -53,20 +53,15 @@ class Authentication extends StatelessWidget {
             style: TextStyle(fontSize: 24),
           ),
           content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text(
-                  '${(e as dynamic).message}',
-                  style: TextStyle(fontSize: 18),
-                ),
-              ],
+            child: Text(
+              '${(e as dynamic).message}',
+              style: TextStyle(fontSize: 18),
             ),
           ),
           actions: <Widget>[
             StyledButton(
               child: Text(
                 'OK',
-                style: TextStyle(color: Colors.deepPurple),
               ),
               onPressed: () {
                 Navigator.of(context).pop();
@@ -147,8 +142,9 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
                     },
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 25.0),
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 24.0),
+                  width: double.infinity,
                   child: StyledButton(
                     onPressed: () {
                       if (_formKey.currentState.validate()) {
