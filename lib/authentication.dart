@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'widgets.dart';
 import 'map.dart';
 
@@ -128,6 +131,25 @@ class Authentication extends StatelessWidget {
   }
 }
 
+Future<UserCredential> signInWithGoogle() async {
+  if (kIsWeb) {
+    GoogleAuthProvider googleProvider = GoogleAuthProvider();
+    googleProvider
+        .addScope('https://www.googleapis.com/auth/contacts.readonly');
+    googleProvider.setCustomParameters({'login_hint': 'user@example.com'});
+    return await FirebaseAuth.instance.signInWithPopup(googleProvider);
+  } else {
+    final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
+    final GoogleAuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+    return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
+}
+
 class EmailPasswordForm extends StatefulWidget {
   final void Function(String email, String password) login;
   final void Function() resetPassword;
@@ -202,7 +224,7 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(vertical: 20.0),
+                  padding: const EdgeInsets.only(top: 20.0, bottom: 5.0),
                   width: double.infinity,
                   child: StyledButton(
                     onPressed: () {
@@ -233,6 +255,29 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
                     widget.registerAccount();
                   },
                   child: Text('Don\'t have an account?'),
+                ),
+                Container(
+                  padding: const EdgeInsets.only(top: 10.0),
+                  width: double.infinity,
+                  child: StyledButton(
+                    onPressed: () {
+                      signInWithGoogle();
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Image(
+                          image: AssetImage('assets/google-logo.png'),
+                          height: 20.0,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 10.0),
+                          child: Text('Sign in with Google'),
+                        )
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),

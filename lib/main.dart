@@ -78,6 +78,14 @@ class ApplicationState extends ChangeNotifier {
     FirebaseAuth.instance.userChanges().listen((user) {
       if (user != null) {
         _loginState = ApplicationLoginState.loggedIn;
+
+        // Update user data
+        FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+          'displayName': user.displayName,
+          'email': user.email,
+          'photoURL': user.photoURL,
+          'lastSeen': DateTime.now(),
+        });
       } else {
         _loginState = ApplicationLoginState.loggedOut;
       }
