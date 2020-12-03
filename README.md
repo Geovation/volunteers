@@ -147,3 +147,13 @@ You can use `--coverage` flag to generate the coverage report for Coveralls or C
 ```
 $ genhtml coverage/lcov.info -o coverage/html
 ```
+
+## Troubleshooting
+##### Soical Login
+Google Sign-in for iOS requires a [custom URL Scheme](https://developers.google.com/identity/sign-in/ios/start-integrating#add_a_url_scheme_to_your_project) to be added to your project.
+
+Google Sign-in for Android requires you to provide a SHA-1. You can easily get the SHA-1 of your signing certificate using the [Gradle signingReport](https://developers.google.com/android/guides/client-auth#using_gradles_signing_report) command:
+```
+$ cd android
+$ ./gradlew signingReport
+```

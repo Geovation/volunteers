@@ -82,7 +82,7 @@ class AttributionLayer extends StatelessWidget {
                                   Text(attributionLayerOpts.copyrightContent),
                               actions: [
                                 FlatButton(
-                                    child: Text("OK"),
+                                    child: Text('OK'),
                                     onPressed: () {
                                       Navigator.of(context).pop();
                                     }),
