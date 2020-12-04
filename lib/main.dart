@@ -37,12 +37,14 @@ class App extends StatelessWidget {
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    bool isLogin = context.watch<ApplicationState>().loginState ==
+        ApplicationLoginState.loggedIn;
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: isLogin ? true : false,
         title: Text('Volunteers'),
         actions: <Widget>[
-          if (context.watch<ApplicationState>().loginState ==
-              ApplicationLoginState.loggedIn)
+          if (isLogin)
             IconButton(
                 icon: Icon(Icons.logout),
                 tooltip: 'Log out',
@@ -63,6 +65,41 @@ class HomePage extends StatelessWidget {
           ),
         ),
       ),
+      drawer: isLogin
+          ? Drawer(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: <Widget>[
+                  UserAccountsDrawerHeader(
+                      accountName: Text(
+                          FirebaseAuth.instance.currentUser.displayName ??
+                              'Not Provided'),
+                      accountEmail:
+                          Text(FirebaseAuth.instance.currentUser.email),
+                      currentAccountPicture: FirebaseAuth
+                                  .instance.currentUser.photoURL !=
+                              null
+                          ? CircleAvatar(
+                              backgroundImage: NetworkImage(
+                                  FirebaseAuth.instance.currentUser.photoURL),
+                            )
+                          : Icon(Icons.account_circle, size: 80.0)),
+                  ListTile(
+                    leading: Icon(Icons.message),
+                    title: Text('Feedback'),
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.account_circle),
+                    title: Text('Profile'),
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.info),
+                    title: Text('About'),
+                  ),
+                ],
+              ),
+            )
+          : null,
     );
   }
 }
