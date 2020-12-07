@@ -4,5 +4,5 @@ class EnvironmentConfig {
 }
 
 class IconAsset {
-  static const OS_LOGO = 'assets/os-logo.svg';
+  static const OS_LOGO = 'assets/images/os-logo.svg';
 }
