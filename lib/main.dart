@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:volunteers/src/widgets/nav_drawer.dart';
 import 'package:volunteers/src/screens/map_screen.dart';
 import 'package:volunteers/src/screens/profile_screen.dart';
+import 'package:volunteers/src/screens/feedback_screen.dart';
 import 'package:volunteers/src/screens/about_screen.dart';
 import 'package:volunteers/src/core/services/auth.dart';
 import 'package:volunteers/src/core/viewmodels/app_state.dart';
@@ -35,6 +36,7 @@ class App extends StatelessWidget {
         '/': (context) => HomeScreen(),
         '/map': (context) => MapScreen(),
         '/profile': (context) => ProfileScreen(),
+        '/feedback': (context) => FeedbackScreen(),
         '/about': (context) => AboutScreen(),
       },
       builder: (context, child) {

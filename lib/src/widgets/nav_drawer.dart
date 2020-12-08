@@ -42,6 +42,10 @@ class NavDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.message),
             title: Text('Feedback'),
+            onTap: () {
+              navigator.currentState.pushNamed('/feedback');
+              RootDrawer.close(context);
+            },
           ),
           ListTile(
             leading: Icon(Icons.info),
