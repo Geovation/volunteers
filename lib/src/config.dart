@@ -5,4 +5,5 @@ class EnvironmentConfig {
 
 class IconAsset {
   static const OS_LOGO = 'assets/images/os-logo.svg';
+  static const GEOVATION_LOGO = 'assets/images/geovation-logo.svg';
 }
