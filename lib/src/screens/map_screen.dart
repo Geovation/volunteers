@@ -24,14 +24,12 @@ class MapScreen extends StatelessWidget {
         ),
         layers: [
           TileLayerOptions(
-            urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-            subdomains: ['a', 'b', 'c'],
-            // urlTemplate:
-            //     'https://api.os.uk/maps/raster/v1/zxy/{layerId}_3857/{z}/{x}/{y}.png?key={accessKey}',
-            // additionalOptions: {
-            //   'layerId': '${EnvironmentConfig.OS_MAP_STYLE}',
-            //   'accessKey': '${EnvironmentConfig.OS_MAPS_API_KEY}',
-            // },
+            urlTemplate:
+                'https://api.os.uk/maps/raster/v1/zxy/{layerId}_3857/{z}/{x}/{y}.png?key={accessKey}',
+            additionalOptions: {
+              'layerId': '${EnvironmentConfig.OS_MAP_STYLE}',
+              'accessKey': '${EnvironmentConfig.OS_MAPS_API_KEY}',
+            },
             maxZoom: 20.0,
           ),
           MapControlPluginOption(),
