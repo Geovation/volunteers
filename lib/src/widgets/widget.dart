@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class Header extends StatelessWidget {
   final String heading;
 
-  const Header(this.heading);
+  Header(this.heading);
 
   @override
   Widget build(BuildContext context) => Padding(
@@ -15,11 +15,26 @@ class Header extends StatelessWidget {
       );
 }
 
+class Paragraph extends StatelessWidget {
+  final String content;
+
+  Paragraph(this.content);
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        child: Text(
+          content,
+          style: TextStyle(fontSize: 18),
+        ),
+      );
+}
+
 class StyledButton extends StatelessWidget {
   final Widget child;
   final void Function() onPressed;
 
-  const StyledButton({
+  StyledButton({
     @required this.child,
     @required this.onPressed,
   });
