@@ -142,8 +142,11 @@ class _FeedbackFormState extends State<FeedbackForm> {
             child: StyledButton(
               onPressed: () {
                 if (widget.chosenSentiment.length == 0) {
-                  _showDialog(context,
-                      'No emoji chosen. How do you feel about the app?');
+                  showErrorDialog(
+                      context,
+                      'Failed to submit',
+                      Exception(
+                          'No emoji chosen. How do you feel about the app?'));
                   return;
                 }
 
@@ -156,8 +159,8 @@ class _FeedbackFormState extends State<FeedbackForm> {
                         'sentiment': widget.chosenSentiment,
                         'message': _feedbackController.text
                       })
-                      .then((value) =>
-                          _showDialog(context, 'Thanks for your feedback :)'))
+                      .then((value) => showSuccessDialog(
+                          context, 'Thanks for your feedback :)'))
                       .catchError(
                           (error) => print("Failed to add feedback: $error"));
                 }
@@ -167,32 +170,6 @@ class _FeedbackFormState extends State<FeedbackForm> {
           ),
         ],
       ),
-    );
-  }
-
-  void _showDialog(BuildContext context, String title) {
-    showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: SingleChildScrollView(
-            child: Text(
-              title,
-              style: TextStyle(fontSize: 18),
-            ),
-          ),
-          actions: <Widget>[
-            StyledButton(
-              child: Text(
-                'OK',
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
     );
   }
 }

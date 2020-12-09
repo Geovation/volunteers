@@ -53,7 +53,7 @@ class Authentication extends StatelessWidget {
       case AppLoginState.loggedOut:
         return EmailPasswordForm(login: (email, password) {
           signInWithEmailAndPassword(email, password,
-              (e) => _showErrorDialog(context, 'Failed to sign in', e));
+              (e) => showErrorDialog(context, 'Failed to sign in', e));
         }, resetPassword: () {
           startResetFlow();
         }, registerAccount: () {
@@ -68,7 +68,7 @@ class Authentication extends StatelessWidget {
           },
           login: (email) {
             sendPasswordResetEmail(
-                email, (e) => _showErrorDialog(context, 'Failed to submit', e));
+                email, (e) => showErrorDialog(context, 'Failed to submit', e));
           },
         );
       case AppLoginState.register:
@@ -82,13 +82,8 @@ class Authentication extends StatelessWidget {
             lastName,
             password,
           ) {
-            registerAccount(
-                email,
-                firstName,
-                lastName,
-                password,
-                (e) =>
-                    _showErrorDialog(context, 'Failed to create account', e));
+            registerAccount(email, firstName, lastName, password,
+                (e) => showErrorDialog(context, 'Failed to create account', e));
           },
         );
       default:
@@ -98,36 +93,6 @@ class Authentication extends StatelessWidget {
           ],
         );
     }
-  }
-
-  void _showErrorDialog(BuildContext context, String title, Exception e) {
-    showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-            title,
-            style: TextStyle(fontSize: 24),
-          ),
-          content: SingleChildScrollView(
-            child: Text(
-              '${(e as dynamic).message}',
-              style: TextStyle(fontSize: 18),
-            ),
-          ),
-          actions: <Widget>[
-            StyledButton(
-              child: Text(
-                'OK',
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
 }
 

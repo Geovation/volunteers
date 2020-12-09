@@ -50,3 +50,64 @@ class StyledButton extends StatelessWidget {
         child: child,
       );
 }
+
+void showSuccessDialog(BuildContext context, String content) {
+  showDialog<void>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Icon(
+          Icons.check_circle_outline,
+          color: Colors.green,
+          size: 85.0,
+        ),
+        content: SingleChildScrollView(
+          child: Text(
+            content,
+            style: TextStyle(fontSize: 18),
+          ),
+        ),
+        actions: <Widget>[
+          StyledButton(
+            child: Text(
+              'OK',
+            ),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
+void showErrorDialog(BuildContext context, String title, Exception e) {
+  showDialog<void>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(
+          title,
+          style: TextStyle(fontSize: 24),
+        ),
+        content: SingleChildScrollView(
+          child: Text(
+            '${(e as dynamic).message}',
+            style: TextStyle(fontSize: 18),
+          ),
+        ),
+        actions: <Widget>[
+          StyledButton(
+            child: Text(
+              'OK',
+            ),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
