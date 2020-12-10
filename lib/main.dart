@@ -59,7 +59,7 @@ class HomeScreen extends StatelessWidget {
         builder: (context, appState, _) => Authentication(
           loginState: appState.loginState,
           signInWithEmailAndPassword: appState.signInWithEmailAndPassword,
-          signOut: appState.signOut,
+          signInWithGoogle: appState.signInWithGoogle,
           startResetFlow: appState.startResetFlow,
           sendPasswordResetEmail: appState.sendPasswordResetEmail,
           startRegisterAccountFlow: appState.startRegisterFlow,

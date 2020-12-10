@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:volunteers/src/core/viewmodels/app_state.dart';
 import 'package:volunteers/src/widgets/app_bar.dart';
 import 'package:volunteers/src/widgets/widget.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FeedbackScreen extends StatefulWidget {
@@ -151,10 +152,9 @@ class _FeedbackFormState extends State<FeedbackForm> {
                 }
 
                 if (_formKey.currentState.validate()) {
-                  User currentUser = FirebaseAuth.instance.currentUser;
                   FirebaseFirestore.instance
                       .collection('feedback')
-                      .doc(currentUser.uid)
+                      .doc(context.read<AppState>().currentUser.uid)
                       .set({
                         'sentiment': widget.chosenSentiment,
                         'message': _feedbackController.text

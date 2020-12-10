@@ -1,28 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
+import 'package:volunteers/src/core/viewmodels/app_state.dart';
 import 'package:volunteers/src/utils/helpers/scaffold_helper.dart';
 
 class NavDrawer extends StatelessWidget {
   final GlobalKey<NavigatorState> navigator;
+
   NavDrawer({Key key, this.navigator}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final currentUser = context.watch<AppState>().currentUser;
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
           UserAccountsDrawerHeader(
-              accountName: Text(FirebaseAuth.instance.currentUser.displayName ??
-                  'Not Provided'),
-              accountEmail: Text(FirebaseAuth.instance.currentUser.email),
-              currentAccountPicture:
-                  FirebaseAuth.instance.currentUser.photoURL != null
-                      ? CircleAvatar(
-                          backgroundImage: NetworkImage(
-                              FirebaseAuth.instance.currentUser.photoURL),
-                        )
-                      : Icon(Icons.account_circle, size: 80.0)),
+              accountName: Text(currentUser.displayName ?? 'Not Provided'),
+              accountEmail: Text(currentUser.email),
+              currentAccountPicture: currentUser.photoURL != null
+                  ? CircleAvatar(
+                      backgroundImage: NetworkImage(currentUser.photoURL),
+                    )
+                  : Icon(Icons.account_circle, size: 80.0)),
           ListTile(
             leading: Icon(Icons.map),
             title: Text('Map'),

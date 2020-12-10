@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:volunteers/src/core/viewmodels/app_state.dart';
 import 'package:volunteers/src/widgets/app_bar.dart';
 import 'package:volunteers/src/widgets/widget.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final currentUser = context.watch<AppState>().currentUser;
+
+    if (currentUser == null) {
+      Navigator.popUntil(context, ModalRoute.withName('/'));
+      return Container();
+    }
+
     return Scaffold(
       appBar: CustomAppBar(title: 'Profile'),
       body: SafeArea(
@@ -18,21 +26,19 @@ class ProfileScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  FirebaseAuth.instance.currentUser.photoURL != null
+                  currentUser.photoURL != null
                       ? CircleAvatar(
                           radius: 70.0,
-                          backgroundImage: NetworkImage(
-                              FirebaseAuth.instance.currentUser.photoURL),
+                          backgroundImage: NetworkImage(currentUser.photoURL),
                         )
                       : Icon(Icons.account_circle, size: 80.0),
                   SizedBox(height: 25.0),
-                  Paragraph(
-                      FirebaseAuth.instance.currentUser.displayName ?? ''),
+                  Paragraph(currentUser.displayName ?? ''),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Icon(Icons.email_outlined, color: Colors.black54),
-                      Paragraph(FirebaseAuth.instance.currentUser.email),
+                      Paragraph(currentUser.email),
                     ],
                   ),
                   SizedBox(height: 25.0),

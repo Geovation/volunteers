@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:volunteers/src/widgets/widget.dart';
 import 'package:volunteers/src/screens/map_screen.dart';
 
@@ -19,7 +17,9 @@ class Authentication extends StatelessWidget {
     String password,
     void Function(Exception e) error,
   ) signInWithEmailAndPassword;
-  final void Function() signOut;
+  final void Function(
+    void Function(Exception e) error,
+  ) signInWithGoogle;
   final void Function() startResetFlow;
   final void Function(
     String email,
@@ -38,7 +38,7 @@ class Authentication extends StatelessWidget {
   const Authentication({
     @required this.loginState,
     @required this.signInWithEmailAndPassword,
-    @required this.signOut,
+    @required this.signInWithGoogle,
     @required this.startResetFlow,
     @required this.sendPasswordResetEmail,
     @required this.cancel,
@@ -51,14 +51,22 @@ class Authentication extends StatelessWidget {
     print('loginState: $loginState');
     switch (loginState) {
       case AppLoginState.loggedOut:
-        return EmailPasswordForm(login: (email, password) {
-          signInWithEmailAndPassword(email, password,
-              (e) => showErrorDialog(context, 'Failed to sign in', e));
-        }, resetPassword: () {
-          startResetFlow();
-        }, registerAccount: () {
-          startRegisterAccountFlow();
-        });
+        return EmailPasswordForm(
+          login: (email, password) {
+            signInWithEmailAndPassword(email, password,
+                (e) => showErrorDialog(context, 'Failed to sign in', e));
+          },
+          signInWithGoogle: () {
+            signInWithGoogle(
+                (e) => showErrorDialog(context, 'Failed to sign in', e));
+          },
+          resetPassword: () {
+            startResetFlow();
+          },
+          registerAccount: () {
+            startRegisterAccountFlow();
+          },
+        );
       case AppLoginState.loggedIn:
         return MapScreen();
       case AppLoginState.resetPassword:
@@ -96,32 +104,15 @@ class Authentication extends StatelessWidget {
   }
 }
 
-Future<UserCredential> signInWithGoogle() async {
-  if (kIsWeb) {
-    GoogleAuthProvider googleProvider = GoogleAuthProvider();
-    googleProvider
-        .addScope('https://www.googleapis.com/auth/contacts.readonly');
-    googleProvider.setCustomParameters({'login_hint': 'user@example.com'});
-    return await FirebaseAuth.instance.signInWithPopup(googleProvider);
-  } else {
-    final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
-    final GoogleSignInAuthentication googleAuth =
-        await googleUser.authentication;
-    final GoogleAuthCredential credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-    return await FirebaseAuth.instance.signInWithCredential(credential);
-  }
-}
-
 class EmailPasswordForm extends StatefulWidget {
   final void Function(String email, String password) login;
+  final void Function() signInWithGoogle;
   final void Function() resetPassword;
   final void Function() registerAccount;
 
   EmailPasswordForm({
     @required this.login,
+    @required this.signInWithGoogle,
     @required this.resetPassword,
     @required this.registerAccount,
   });
@@ -234,7 +225,7 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
                     width: double.infinity,
                     child: StyledButton(
                       onPressed: () {
-                        signInWithGoogle();
+                        widget.signInWithGoogle();
                       },
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
