@@ -1,14 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:volunteers/src/core/enums/app_state.dart';
 import 'package:volunteers/src/widgets/widget.dart';
 import 'package:volunteers/src/screens/map_screen.dart';
-
-enum AppLoginState {
-  loggedOut,
-  loggedIn,
-  resetPassword,
-  register,
-}
 
 class Authentication extends StatelessWidget {
   final AppLoginState loginState;

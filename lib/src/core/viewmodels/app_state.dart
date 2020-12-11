@@ -5,8 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:volunteers/src/core/services/auth.dart';
-
+import 'package:volunteers/src/core/enums/app_state.dart';
 import 'package:volunteers/src/core/models/user.dart' as UserModel;
 
 class AppState extends ChangeNotifier {
