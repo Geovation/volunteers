@@ -7,12 +7,14 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:volunteers/src/core/services/auth.dart';
 
+import 'package:volunteers/src/core/models/user.dart' as UserModel;
+
 class AppState extends ChangeNotifier {
   AppLoginState _loginState;
   AppLoginState get loginState => _loginState;
 
-  User _currentUser;
-  User get currentUser => _currentUser;
+  UserModel.User _currentUser;
+  UserModel.User get currentUser => _currentUser;
 
   bool _isUserLoggedIn;
   bool get isUserLoggedIn => _isUserLoggedIn;
@@ -34,13 +36,22 @@ class AppState extends ChangeNotifier {
           'email': user.email,
           'photoURL': user.photoURL,
           'lastSeen': DateTime.now(),
-          'isAdmin': false,
+        }, SetOptions(merge: true));
+
+        // Set current user
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get()
+            .then((value) {
+          _currentUser = UserModel.User.fromData(value.data());
         });
       } else {
         _loginState = AppLoginState.loggedOut;
+        _currentUser = null;
       }
-      _currentUser = FirebaseAuth.instance.currentUser;
-      _isUserLoggedIn = _currentUser != null;
+
+      _isUserLoggedIn = user != null;
       notifyListeners();
     });
   }
@@ -130,6 +141,7 @@ class AppState extends ChangeNotifier {
         'email': email,
         'firstName': firstName,
         'lastName': lastName,
+        'isAdmin': false,
       });
     } on FirebaseAuthException catch (e) {
       errorCallback(e);
