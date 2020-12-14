@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:volunteers/src/core/enums/app_state.dart';
+import 'package:volunteers/src/core/models/feedback.dart';
 import 'package:volunteers/src/core/models/user.dart' as UserModel;
 
 class AppState extends ChangeNotifier {
@@ -17,6 +18,10 @@ class AppState extends ChangeNotifier {
 
   bool _isUserLoggedIn;
   bool get isUserLoggedIn => _isUserLoggedIn;
+
+  StreamSubscription<QuerySnapshot> _feedbackSubscription;
+  List<FeedbackMessage> _feedbackMessages = [];
+  List<FeedbackMessage> get feedbackMessages => _feedbackMessages;
 
   AppState() {
     init();
@@ -44,13 +49,45 @@ class AppState extends ChangeNotifier {
             .get()
             .then((value) {
           _currentUser = UserModel.User.fromData(value.data());
+          _isUserLoggedIn = user != null;
+
+          // Listen to feedback if admin
+          if (_currentUser.isAdmin) {
+            if (_feedbackSubscription != null) _feedbackSubscription.cancel();
+            _feedbackSubscription = FirebaseFirestore.instance
+                .collection('feedback')
+                .orderBy('timestamp', descending: true)
+                .snapshots()
+                .listen((snapshot) async {
+              _feedbackMessages = [];
+              await Future.forEach(snapshot.docs, (document) async {
+                print(document.data());
+                await FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(document.data()['userId'])
+                    .get()
+                    .then((value) {
+                  _feedbackMessages.add(
+                    FeedbackMessage(
+                      user: UserModel.User.fromData(value.data()),
+                      message: document.data()['message'],
+                      sentiment: document.data()['sentiment'],
+                      timestamp: document.data()['timestamp'],
+                    ),
+                  );
+                });
+              });
+              notifyListeners();
+            });
+          }
         });
       } else {
         _loginState = AppLoginState.loggedOut;
         _currentUser = null;
+        _isUserLoggedIn = user != null;
+        _feedbackMessages = [];
+        _feedbackSubscription?.cancel();
       }
-
-      _isUserLoggedIn = user != null;
       notifyListeners();
     });
   }
@@ -137,6 +174,7 @@ class AppState extends ChangeNotifier {
           .collection('users')
           .doc(credential.user.uid)
           .set({
+        'uid': credential.user.uid,
         'email': email,
         'firstName': firstName,
         'lastName': lastName,
