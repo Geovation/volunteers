@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:volunteers/src/core/models/feedback.dart';
+import 'package:volunteers/src/core/services/firestore_service.dart';
+import 'package:volunteers/src/core/viewmodels/app_state.dart';
 import 'package:volunteers/src/widgets/app_bar.dart';
 import 'package:volunteers/src/widgets/widget.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 class FeedbackScreen extends StatefulWidget {
   @override
@@ -41,6 +44,13 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final currentUser = context.watch<AppState>().currentUser;
+
+    if (currentUser == null) {
+      Navigator.popUntil(context, ModalRoute.withName('/'));
+      return Container();
+    }
+
     return Scaffold(
       appBar: CustomAppBar(title: 'Feedback'),
       body: SafeArea(
@@ -52,35 +62,39 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(5.0),
-                    child: Image.asset('assets/images/pencil.jpg'),
-                  ),
-                  SizedBox(height: 25.0),
-                  Paragraph(
-                      'We would like your feedback to improve our project.'),
-                  SizedBox(height: 10.0),
-                  Paragraph('How do you feel about this app?'),
-                  SizedBox(height: 10.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      ...renderEmojiButtons(),
-                    ],
-                  ),
-                  SizedBox(height: 25.0),
-                  Divider(
-                    height: 8,
-                    thickness: 1,
-                    indent: 8,
-                    endIndent: 8,
-                    color: Colors.grey,
-                  ),
-                  SizedBox(height: 20.0),
-                  Paragraph('Please leave you feedback below:'),
-                  FeedbackForm(chosenSentiment: _sentiment),
-                ],
+                children: currentUser.isAdmin != true
+                    ? <Widget>[
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(5.0),
+                          child: Image.asset('assets/images/pencil.jpg'),
+                        ),
+                        SizedBox(height: 25.0),
+                        Paragraph(
+                            'We would like your feedback to improve our project.'),
+                        SizedBox(height: 10.0),
+                        Paragraph('How do you feel about this app?'),
+                        SizedBox(height: 10.0),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            ...renderEmojiButtons(),
+                          ],
+                        ),
+                        SizedBox(height: 25.0),
+                        Divider(
+                          height: 8,
+                          thickness: 1,
+                          indent: 8,
+                          endIndent: 8,
+                          color: Colors.grey,
+                        ),
+                        SizedBox(height: 20.0),
+                        Paragraph('Please leave you feedback below:'),
+                        FeedbackForm(chosenSentiment: _sentiment),
+                      ]
+                    : <Widget>[
+                        AdminFeedback(),
+                      ],
               ),
             ),
           ),
@@ -151,14 +165,12 @@ class _FeedbackFormState extends State<FeedbackForm> {
                 }
 
                 if (_formKey.currentState.validate()) {
-                  User currentUser = FirebaseAuth.instance.currentUser;
-                  FirebaseFirestore.instance
-                      .collection('feedback')
-                      .doc(currentUser.uid)
-                      .set({
-                        'sentiment': widget.chosenSentiment,
-                        'message': _feedbackController.text
-                      })
+                  context
+                      .read<FirestoreService>()
+                      .addFeedbackMessage(
+                          context.read<AppState>().currentUser.uid,
+                          widget.chosenSentiment,
+                          _feedbackController.text)
                       .then((value) => showSuccessDialog(
                           context, 'Thanks for your feedback :)'))
                       .catchError(
@@ -169,6 +181,100 @@ class _FeedbackFormState extends State<FeedbackForm> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class AdminFeedback extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final List<FeedbackMessage> feedbackMessages =
+        context.watch<AppState>().feedbackMessages;
+    return Container(
+      height: 500,
+      child: ListView.builder(
+        itemCount: feedbackMessages.length,
+        itemBuilder: (context, index) {
+          final item = feedbackMessages[index];
+
+          return Card(
+            elevation: 5,
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(width: 0.8, color: Colors.black54),
+                ),
+                color: Colors.white,
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(10.0),
+                child: Stack(children: <Widget>[
+                  Align(
+                    alignment: Alignment.center,
+                    child: Stack(
+                      children: <Widget>[
+                        Padding(
+                            padding: const EdgeInsets.only(left: 10, top: 5),
+                            child: Column(
+                              children: <Widget>[
+                                Row(
+                                  children: <Widget>[
+                                    item.user.photoURL != null
+                                        ? CircleAvatar(
+                                            radius: 20.0,
+                                            backgroundImage: NetworkImage(
+                                                item.user.photoURL),
+                                          )
+                                        : Icon(Icons.account_circle,
+                                            size: 40.0),
+                                    SizedBox(width: 10.0),
+                                    Text(item.user.displayName),
+                                  ],
+                                ),
+                                SizedBox(height: 10.0),
+                                Row(
+                                  children: <Widget>[
+                                    Icon(Icons.access_time,
+                                        size: 35.0, color: Colors.black54),
+                                    SizedBox(width: 10.0),
+                                    Flexible(
+                                        child: Text(DateFormat(
+                                                'yyyy-MM-dd - HH:mm:ss')
+                                            .format(DateTime
+                                                .fromMillisecondsSinceEpoch(item
+                                                    .timestamp
+                                                    .millisecondsSinceEpoch)))),
+                                  ],
+                                ),
+                                SizedBox(height: 10.0),
+                                Row(
+                                  children: <Widget>[
+                                    Icon(Icons.mood,
+                                        size: 35.0, color: Colors.black54),
+                                    SizedBox(width: 10.0),
+                                    Flexible(child: Text(item.sentiment)),
+                                  ],
+                                ),
+                                SizedBox(height: 10.0),
+                                Row(
+                                  children: <Widget>[
+                                    Icon(Icons.message,
+                                        size: 35.0, color: Colors.black54),
+                                    SizedBox(width: 10.0),
+                                    Flexible(child: Text(item.message)),
+                                  ],
+                                ),
+                              ],
+                            ))
+                      ],
+                    ),
+                  )
+                ]),
+              ),
+            ),
+          );
+        },
       ),
     );
   }

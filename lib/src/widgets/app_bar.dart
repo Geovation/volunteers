@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:volunteers/src/core/viewmodels/app_state.dart';
 import 'package:volunteers/src/utils/helpers/scaffold_helper.dart';
 
@@ -16,7 +15,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           icon: Icon(Icons.menu),
           onPressed: () => RootScaffold.openDrawer(context)),
       actions: <Widget>[
-        if (FirebaseAuth.instance.currentUser != null)
+        if (context.watch<AppState>().currentUser != null)
           IconButton(
               icon: Icon(Icons.logout),
               tooltip: 'Log out',
