@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:volunteers/src/core/models/feedback.dart';
+import 'package:volunteers/src/core/services/firestore_service.dart';
 import 'package:volunteers/src/core/viewmodels/app_state.dart';
 import 'package:volunteers/src/widgets/app_bar.dart';
 import 'package:volunteers/src/widgets/widget.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
 class FeedbackScreen extends StatefulWidget {
@@ -165,14 +165,12 @@ class _FeedbackFormState extends State<FeedbackForm> {
                 }
 
                 if (_formKey.currentState.validate()) {
-                  FirebaseFirestore.instance
-                      .collection('feedback')
-                      .add({
-                        'userId': context.read<AppState>().currentUser.uid,
-                        'sentiment': widget.chosenSentiment,
-                        'message': _feedbackController.text,
-                        'timestamp': DateTime.now(),
-                      })
+                  context
+                      .read<FirestoreService>()
+                      .addFeedbackMessage(
+                          context.read<AppState>().currentUser.uid,
+                          widget.chosenSentiment,
+                          _feedbackController.text)
                       .then((value) => showSuccessDialog(
                           context, 'Thanks for your feedback :)'))
                       .catchError(

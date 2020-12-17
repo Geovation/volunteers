@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:volunteers/src/widgets/authentication.dart';
 import 'package:volunteers/src/widgets/nav_drawer.dart';
@@ -8,14 +9,18 @@ import 'package:volunteers/src/screens/profile_screen.dart';
 import 'package:volunteers/src/screens/feedback_screen.dart';
 import 'package:volunteers/src/screens/about_screen.dart';
 import 'package:volunteers/src/core/viewmodels/app_state.dart';
+import 'package:volunteers/src/core/services/firestore_service.dart';
 
-void main() {
-  runApp(
-    ChangeNotifierProvider(
-      create: (context) => AppState(),
-      builder: (context, _) => App(),
-    ),
-  );
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (_) => AppState()),
+      Provider(create: (_) => FirestoreService()),
+    ],
+    child: App(),
+  ));
 }
 
 class App extends StatelessWidget {

@@ -19,7 +19,7 @@ class User {
       this.isAdmin,
       this.photoURL});
 
-  User.fromData(Map<String, dynamic> data)
+  User.fromJson(Map<String, dynamic> data)
       : uid = data['uid'],
         displayName = data['displayName'],
         firstName = data['firstName'],
