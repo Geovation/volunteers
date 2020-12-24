@@ -8,8 +8,8 @@ class FirestoreService {
   FirebaseFirestore db = FirebaseFirestore.instance;
 
   Future<void> createUser(
-      String uid, String email, String firstName, String lastName) {
-    return db.collection('users').doc(uid).set({
+      String uid, String email, String firstName, String lastName) async {
+    return await db.collection('users').doc(uid).set({
       'uid': uid,
       'email': email,
       'firstName': firstName,
@@ -18,8 +18,8 @@ class FirestoreService {
     });
   }
 
-  Future<void> updateUser(AuthUser.User user) {
-    return db.collection('users').doc(user.uid).set({
+  Future<void> updateUser(AuthUser.User user) async {
+    return await db.collection('users').doc(user.uid).set({
       'displayName': user.displayName,
       'email': user.email,
       'photoURL': user.photoURL,
@@ -27,8 +27,8 @@ class FirestoreService {
     }, SetOptions(merge: true));
   }
 
-  Future<CustomUser.User> getUser(String uid) {
-    return db
+  Future<CustomUser.User> getUser(String uid) async {
+    return await db
         .collection('users')
         .doc(uid)
         .get()
@@ -43,8 +43,8 @@ class FirestoreService {
   }
 
   Future<DocumentReference> addFeedbackMessage(
-      String uid, String sentiment, String message) {
-    return db.collection('feedback').add({
+      String uid, String sentiment, String message) async {
+    return await db.collection('feedback').add({
       'userId': uid,
       'sentiment': sentiment,
       'message': message,

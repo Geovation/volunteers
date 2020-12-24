@@ -89,10 +89,12 @@ class Authentication extends StatelessWidget {
           },
         );
       default:
-        return Row(
-          children: [
-            Text("Internal error, this shouldn't happen..."),
-          ],
+        return Center(
+          child: SizedBox(
+            child: CircularProgressIndicator(),
+            height: 60.0,
+            width: 60.0,
+          ),
         );
     }
   }

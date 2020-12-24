@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:volunteers/src/core/services/firebase_auth_service.dart';
 import 'package:volunteers/src/core/viewmodels/app_state.dart';
 import 'package:volunteers/src/utils/helpers/scaffold_helper.dart';
 
@@ -20,7 +21,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               icon: Icon(Icons.logout),
               tooltip: 'Log out',
               onPressed: () {
-                context.read<AppState>().signOut();
+                context.read<FirebaseAuthService>().signOut();
                 Navigator.popUntil(context, ModalRoute.withName('/'));
               })
       ],
