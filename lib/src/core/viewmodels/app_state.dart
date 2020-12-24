@@ -2,11 +2,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:volunteers/src/core/enums/app_state.dart';
 import 'package:volunteers/src/core/models/feedback.dart';
 import 'package:volunteers/src/core/models/user.dart' as UserModel;
+import 'package:volunteers/src/core/services/firebase_auth_service.dart';
 import 'package:volunteers/src/core/services/firestore_service.dart';
 
 class AppState extends ChangeNotifier {
@@ -24,18 +24,19 @@ class AppState extends ChangeNotifier {
   List<FeedbackMessage> get feedbackMessages => _feedbackMessages;
 
   final _firestoreService = FirestoreService();
+  final _firebaseAuthService = FirebaseAuthService();
 
   AppState() {
     init();
   }
 
   void init() {
-    FirebaseAuth.instance.userChanges().listen((user) async {
+    _firebaseAuthService.onUserChanged().listen((user) async {
       if (user != null) {
         _loginState = AppLoginState.loggedIn;
 
         // Update user data
-        _firestoreService.updateUser(user);
+        await _firestoreService.updateUser(user);
 
         // Set current user
         _currentUser = await _firestoreService.getUser(user.uid);
@@ -43,7 +44,7 @@ class AppState extends ChangeNotifier {
         notifyListeners();
 
         // Listen to feedback if admin
-        if (_currentUser.isAdmin) {
+        if (_currentUser.isAdmin ?? false) {
           if (_feedbackSubscription != null) _feedbackSubscription.cancel();
           _feedbackSubscription =
               _firestoreService.onFeedbackChanged().listen((snapshot) async {
@@ -80,10 +81,7 @@ class AppState extends ChangeNotifier {
     void Function(FirebaseAuthException e) errorCallback,
   ) async {
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+      await _firebaseAuthService.signInWithEmailAndPassword(email, password);
     } on FirebaseAuthException catch (e) {
       errorCallback(e);
     }
@@ -93,31 +91,10 @@ class AppState extends ChangeNotifier {
     void Function(FirebaseAuthException e) errorCallback,
   ) async {
     try {
-      if (kIsWeb) {
-        GoogleAuthProvider googleProvider = GoogleAuthProvider();
-        googleProvider
-            .addScope('https://www.googleapis.com/auth/contacts.readonly');
-        googleProvider.setCustomParameters({'login_hint': 'user@example.com'});
-        await FirebaseAuth.instance.signInWithPopup(googleProvider);
-      } else {
-        final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
-        // workaround: when user cancels google account selection dialog
-        if (googleUser == null) return;
-        final GoogleSignInAuthentication googleAuth =
-            await googleUser.authentication;
-        final GoogleAuthCredential credential = GoogleAuthProvider.credential(
-          accessToken: googleAuth.accessToken,
-          idToken: googleAuth.idToken,
-        );
-        await FirebaseAuth.instance.signInWithCredential(credential);
-      }
+      await _firebaseAuthService.signInWithGoogle();
     } on FirebaseAuthException catch (e) {
       errorCallback(e);
     }
-  }
-
-  void signOut() {
-    FirebaseAuth.instance.signOut();
   }
 
   void startResetFlow() {
@@ -130,9 +107,7 @@ class AppState extends ChangeNotifier {
     void Function(FirebaseAuthException e) errorCallback,
   ) async {
     try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(
-        email: email,
-      );
+      await _firebaseAuthService.sendPasswordResetEmail(email);
     } on FirebaseAuthException catch (e) {
       errorCallback(e);
     }
@@ -150,14 +125,11 @@ class AppState extends ChangeNotifier {
       String password,
       void Function(FirebaseAuthException e) errorCallback) async {
     try {
-      UserCredential credential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+      UserCredential credential = await _firebaseAuthService
+          .createUserWithEmailAndPassword(email, password);
       await credential.user
           .updateProfile(displayName: firstName + ' ' + lastName);
-      _firestoreService.createUser(
+      await _firestoreService.createUser(
           credential.user.uid, email, firstName, lastName);
     } on FirebaseAuthException catch (e) {
       errorCallback(e);
