@@ -23,6 +23,20 @@ Check if there are any dependencies you need to install to complete the setup:
 $ flutter doctor -v
 ```
 
+## Add Firebase to the app
+
+#### Web
+
+Update the `web/firebase-config.js` with your firebaseConfig.
+
+#### Android
+
+Put `google-services.json` at the Android app module root directory.
+
+#### iOS
+
+Open `ios/Runner.xcworkspace` and add the `GoogleService-Info.plist` file to `Runner` folder.
+
 ## Run the mobile app
 
 Check running devices:
@@ -86,11 +100,10 @@ The `launch.json` should look something like this:
 
 ## Run the web app
 
-Switch to beta channel, use latest version of Flutter SDK, and then enable web support:
+Run the following commands to use the latest version of the Flutter SDK:
 ```
-$ flutter channel beta
+$ flutter channel stable
 $ flutter upgrade
-$ flutter config --enable-web
 ```
 
 To serve your app from `localhost` in Chrome (web):
